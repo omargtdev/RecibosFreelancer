@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { createElement, useState } from "react";
 import Receipt from "../types/Receipt";
 import ReceiptService from "../services/ReceiptService";
 
@@ -12,8 +12,16 @@ function CreateReceipt() {
         e.preventDefault();
 
         receiptService.generateReceipt(receipt)
-            .then(res => console.log(res))
-            .catch(err => console.log(err));
+            .then(blobPdf => {
+                const url = URL.createObjectURL(blobPdf);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "receipt.pdf";
+                link.click();
+                
+                URL.revokeObjectURL(url);
+            })
+            .catch(errors => console.log(errors));
     }
 
     return (
@@ -52,7 +60,6 @@ function CreateReceipt() {
                                 className="form-select"
                                 onChange={e => setReceipt({ ...receipt, typeCurrency: e.target.value })}
                             >
-                                <option value={"null"}>-- Seleccione un tipo --</option>
                                 <option value="1">Soles (S/.)</option>
                                 <option value="2">Dolares ($)</option>
                                 <option value="3">Euros (E)</option>
@@ -109,7 +116,6 @@ function CreateReceipt() {
                                 className="form-select"
                                 onChange={e => setReceipt({ ...receipt, typeDocument: e.target.value })}
                             >
-                                <option value={"null"}>-- Seleccione un tipo --</option>
                                 <option value="1">DNI</option>
                                 <option value="2">RUC</option>
                                 <option value="3">Carnet de extranjeria</option>

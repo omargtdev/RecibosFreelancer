@@ -7,7 +7,7 @@ class ReceiptService {
     /**
      * 
      * @param {Receipt} receipt The receipt with data to generate
-     * @return {Promise}        Response of the service
+     * @return {Promise}        Response of the service (blob)
      */
     generateReceipt = (receipt) => {
         const formData = new FormData();
@@ -15,15 +15,19 @@ class ReceiptService {
             formData.append(key, value)
         })
 
-        return new Promise((resolve, reject) => {
-            fetch(`${this.#API_URL}/receipt/generate`, {
+        return new Promise(async (resolve, reject) => {
+            const result = await fetch(`${this.#API_URL}/receipt/generate`, {
                 method: "post",
                 body: formData
-            })
-                .then(res => res.json())
-                .then(res => resolve(res))
-                .catch(err => reject(err));
-        })
+            });
+
+            if(result.status !== 200){
+                const { errors } = await result.json();
+                return reject(errors);
+            }
+
+            resolve(await result.blob());
+        });
     }
 
 }
