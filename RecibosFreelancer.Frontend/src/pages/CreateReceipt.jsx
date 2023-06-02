@@ -1,16 +1,16 @@
 import { createElement, useState } from "react";
 import Receipt from "../types/Receipt";
 import ReceiptService from "../services/ReceiptService";
+import { Button, Col, Container, Form, FormSelect, Row } from "react-bootstrap";
 
 const receiptService = new ReceiptService();
 
 function CreateReceipt() {
 
+    const [formValidated, setFormValidated] = useState(false);
     const [receipt, setReceipt] = useState(new Receipt());
     
-    const generateReceipt = (e) => {
-        e.preventDefault();
-
+    const handleSubmit = (e) => {
         receiptService.generateReceipt(receipt)
             .then(blobPdf => {
                 const url = URL.createObjectURL(blobPdf);
@@ -25,11 +25,55 @@ function CreateReceipt() {
     }
 
     return (
-        <div className="container my-3">
+        <Container className="my-3">
             <h1>Crear recibo</h1>
-            <form 
+            <Form noValidate validated={formValidated} onSubmit={handleSubmit}>
+                <fieldset className="mb-3">
+                    <legend>Datos del recibo</legend>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Título</Form.Label>
+                        <Form.Control
+                            required
+                            type="text"
+                            placeholder="Coloque el titulo del recibo"
+                        />
+                        <Form.Control.Feedback type="invalid">Se requiere de un titulo</Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Descripción</Form.Label>
+                        <Form.Control
+                            style={{ resize: "none" }}
+                            as="textarea"
+                            required
+                            placeholder="Coloque la descripción del recibo"
+                        />
+                        <Form.Control.Feedback type="invalid">Se requiere de una descripción</Form.Control.Feedback>
+                    </Form.Group>
+                    <Row className="mb-3">
+                        <Form.Group as={Col} md="6">
+                            <Form.Label>Tipo moneda</Form.Label>
+                            <Form.Select>
+                                <option value={0}>Soles (S/.)</option>
+                                <option value={1}>Dolares ($)</option>
+                                <option value={2}>Euros (E)</option>
+                            </Form.Select>
+                        </Form.Group>
+                        <Form.Group as={Col} md="6">
+                            <Form.Label>Monto</Form.Label>
+                            <Form.Control
+                                required
+                                type="number"
+                                placeholder="Coloque el monto a cobrar"
+                            />
+                            <Form.Control.Feedback type="invalid">Se requiere un monto</Form.Control.Feedback>
+                        </Form.Group>
+                    </Row>
+                </fieldset>
+                <Button type="submit">Generar</Button>
+            </Form>
+            <form
                 className="mt-4 needs-validation"
-                onSubmit={e => generateReceipt(e)}>
+                onSubmit={e => handleSubmit(e)}>
                 <fieldset className="mb-3">
                     <legend>Datos del recibo</legend>
                     <div className="mb-3">
@@ -134,7 +178,7 @@ function CreateReceipt() {
                 </fieldset>
                 <button type="submit" className="btn btn-primary">Generar</button>
             </form>
-        </div>
+        </Container>
     )
 }
 

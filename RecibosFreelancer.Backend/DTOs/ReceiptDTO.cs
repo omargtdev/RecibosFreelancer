@@ -6,10 +6,11 @@ namespace RecibosFreelancer.Backend.DTOs
     public class ReceiptDTO
     {
         [Required(ErrorMessage = "El titulo es requerido")]
+        [StringLength(20, ErrorMessage = "El titulo no puede tener más de 20 caracteres")]
         public string? Title { get; set; }
 
         [Required(ErrorMessage = "La descripcion es requerida")]
-        [StringLength(100, ErrorMessage = "La descripción no puede tener más de 100 caracteres")]
+        [StringLength(150, ErrorMessage = "La descripción no puede tener más de 150 caracteres")]
         public string? Description { get; set; }
 
         [EnumDataType(typeof(CurrencyType), ErrorMessage = "El tipo de moneda no es válido")]
