@@ -1,0 +1,19 @@
+CREATE DATABASE RecibosFreelancer
+GO
+
+USE RecibosFreelancer
+GO
+
+CREATE TABLE Receipt (
+	ReceiptId INT PRIMARY KEY IDENTITY(1, 1),
+	Title VARCHAR(30) NOT NULL,
+	[Description] VARCHAR(200) NOT NULL,
+	CurrencyType SMALLINT NOT NULL,
+	Amount MONEY NOT NULL,
+	Logo VARBINARY(MAX) NOT NULL,
+	FullName VARCHAR(100) NOT NULL,
+	[Address] VARCHAR(250) NOT NULL,
+	DocumentType SMALLINT NOT NULL,
+	DocumentNumber VARCHAR(40) NOT NULL
+);
+GO
