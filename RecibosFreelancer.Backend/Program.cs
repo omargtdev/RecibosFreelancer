@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
+using RecibosFreelancer.Backend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +25,14 @@ builder.Services.Configure<FormOptions>(options => // Configure the limit
     options.MultipartBodyLengthLimit = 104857600; // 100 MB
 });
 
+// Database
+builder.Services.AddDbContext<RecibosFreelancerContext>(options => 
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("RecibosFreelancerContext"));
+});
+
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

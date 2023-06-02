@@ -8,7 +8,11 @@ using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using RecibosFreelancer.Backend.DTOs;
+using RecibosFreelancer.Backend.Models;
+using RecibosFreelancer.Backend.Models.Mappers;
 using RecibosFreelancer.Backend.Utils;
 
 namespace RecibosFreelancer.Backend.Controllers
@@ -19,14 +23,15 @@ namespace RecibosFreelancer.Backend.Controllers
     public class ReceiptController : ControllerBase
     {
         private readonly ILogger<ReceiptController> _logger;
-
-        public ReceiptController(ILogger<ReceiptController> logger)
+        private readonly RecibosFreelancerContext _context;
+        public ReceiptController(ILogger<ReceiptController> logger, RecibosFreelancerContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         [HttpPost("Generate")]
-        public IActionResult Generate([FromForm] ReceiptDTO receipt)
+        public async Task<IActionResult> Generate([FromForm] ReceiptDTO receipt)
         {
             // Validate
             var validationContext = new ValidationContext(receipt, null, null);
@@ -39,8 +44,24 @@ namespace RecibosFreelancer.Backend.Controllers
                 return BadRequest(errors);
             }
 
+            // Adding to database
+            var receiptEntity = ReceiptMapper.MapToEntity(receipt);
+            var addTask = _context.Receipts.AddAsync(receiptEntity);
+            var saveTask = _context.SaveChangesAsync();
+
+            // Generating the pdf
             byte[] pdfBytes = GetPDFInMemory(receipt).ToArray();
+
+            await addTask;
+            await saveTask;
+
             return File(pdfBytes, "application/pdf", "receipt.pdf");
+        }
+
+        [HttpGet("")]
+        public async Task<IEnumerable<ReceiptDTO>> GetRecipts()
+        {
+            return await _context.Receipts.Select(r => ReceiptMapper.MapToDTO(r)).ToListAsync();
         }
 
         private MemoryStream GetPDFInMemory(ReceiptDTO receipt)
@@ -65,10 +86,8 @@ namespace RecibosFreelancer.Backend.Controllers
             date.SetMarginBottom(1);
             pdfPage.Add(date);
 
-            using MemoryStream imageInMemory = new MemoryStream();
-            receipt.Logo?.OpenReadStream().CopyTo(imageInMemory);
 
-            var imageData = ImageDataFactory.Create(imageInMemory.ToArray());
+            var imageData = ImageDataFactory.Create(FileConverter.ConvertFormFileToByteArray(receipt.Logo!));
 
             var image = new Image(imageData);
             image.ScaleToFit(35, 35);
