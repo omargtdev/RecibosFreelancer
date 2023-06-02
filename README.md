@@ -2,6 +2,24 @@
 
 Plataforma para poder generar recibos orientado a freelancers hecho con React 18 (Frontend) y .NET 7 (Backend).
 
+## Preview 
+
+### Front
+![home page](./Docs/Images/Front/home_page.png)
+
+![form receipt 1](./Docs/Images/Front/form_receipt_1.png)
+
+![form receipt 2](./Docs/Images/Front/form_receipt_2.png)
+
+![form receipt 3](./Docs/Images/Front/form_receipt_3.png)
+
+### Backend
+![api - swagger](./Docs/Images/Back/swagger_api_1.png)
+
+![api - swagger](./Docs/Images/Back/swagger_api_2.png)
+
+![receipt in pdf](./Docs/Images/Back/receipt_pdf.png)
+
 ## ¿Cómo levantarla? (Para fines de desarrollo y pruebas)
 
 ### Prerrequisito
