@@ -1,11 +1,14 @@
+import { Col, Container, Row } from "react-bootstrap";
 
 function ContainerCentered({ children }) {
     return (
-        <div className="d-flex align-items-center" style={{ height: "100vh" }}>
-            <div className="d-flex justify-content-center align-items-center flex-grow-1">
-            {children}    
-            </div>
-        </div>
+        <Container fluid className="vh-100">
+            <Row className="justify-content-center align-items-center h-100">
+                <Col className="text-center">
+                    {children}
+                </Col>
+            </Row>
+        </Container>
     )
 }
 

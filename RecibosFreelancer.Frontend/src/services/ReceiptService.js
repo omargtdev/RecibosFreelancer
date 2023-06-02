@@ -1,4 +1,4 @@
-import Receipt from "../types/Receipt";
+import Receipt from "../entities/Receipt";
 
 class ReceiptService {
 
